@@ -104,6 +104,7 @@ a {
 
 .nav__logo {
     font-family: var(--font-serif);
+    white-space: nowrap;
     font-size: 1.125rem;
     letter-spacing: 0.3em;
     text-transform: uppercase;
@@ -122,6 +123,7 @@ a {
 
 .nav__link {
     position: relative;
+    white-space: nowrap;
     font-family: var(--font-sans);
     font-size: 0.75rem;
     letter-spacing: 0.2em;
@@ -1035,8 +1037,8 @@ html[lang="vi"] .nav__logo {
 .footer__disclaimer-tip {
     position: absolute;
     bottom: calc(100% + 10px);
-    left: 50%;
-    transform: translateX(-50%);
+    right: 0; /* 右对齐锚定：trigger 在页脚右侧，向左展开避免向右溢出视口 */
+    transform: none;
     z-index: 40;
     width: max-content; /* 以最长行为宽度，避免被窄父容器压成竖柱 */
     max-width: min(420px, 80vw);
@@ -1095,8 +1097,8 @@ html[lang="vi"] .nav__logo {
 .footer__credits-popup {
     position: absolute;
     bottom: calc(100% + 12px);
-    left: 50%;
-    transform: translateX(-50%);
+    right: 0; /* 同免责声明浮层：右对齐锚定 */
+    transform: none;
     z-index: 45;
     width: max-content;
     max-width: min(460px, 86vw);
@@ -1119,10 +1121,11 @@ html[lang="vi"] .nav__logo {
     pointer-events: auto;
 }
 
-/* 移动端：页脚两个弹层（免责声明 / 制作组）改为 fixed 全宽底部浮层。
-   原「以行内 trigger 居中」定位在 trigger 靠近屏幕边缘时会整体溢出（左侧文字被裁），
-   fixed + 左右边距保证任何 trigger 位置下内容完整可读 */
-@media (max-width: 640px) {
+/* 页脚两个弹层（免责声明 / 制作组）：窄屏与平板改为 fixed 全宽底部浮层。
+   行内绝对定位在 trigger 靠近屏幕边缘时内容会被裁（右锚定在 trigger 居左时裁左侧，
+   居中定位在 trigger 居右时溢出右侧）——fixed + 左右边距保证任何 trigger 位置完整可读。
+   2026-09-26：断点随导航抽屉一起从 640 提到 900（平板页脚换行后 trigger 会挪到左半侧）。 */
+@media (max-width: 900px) {
     .footer__disclaimer-tip,
     .footer__credits-popup {
         position: fixed;
@@ -1202,41 +1205,6 @@ a.footer__credits-name:hover {
 }
 
 @media (max-width: 640px) {
-    .nav__links {
-        position: fixed;
-        top: var(--nav-h);
-        left: 0;
-        right: 0;
-        flex-direction: column;
-        align-items: flex-start;
-        background: var(--bg);
-        border-bottom: 1px solid var(--fg-10);
-        padding: 1.5rem;
-        gap: 1.25rem;
-        transform: translateY(-12px);
-        opacity: 0;
-        visibility: hidden;
-        transition: opacity 0.3s ease, transform 0.3s ease, visibility 0.3s;
-    }
-
-    .nav__links--open {
-        transform: translateY(0);
-        opacity: 1;
-        visibility: visible;
-    }
-
-    /* 移动端下拉：语言切换改为独立一行，去掉竖分隔线 */
-    .nav__lang {
-        margin-left: 0;
-        padding-left: 0;
-        border-left: 0;
-        padding-top: 0.5rem;
-    }
-
-    .nav__toggle {
-        display: flex;
-    }
-
     .section {
         padding: 5rem 1.5rem;
     }
@@ -1260,9 +1228,48 @@ a.footer__credits-name:hover {
     }
 }
 
+/* 中文导航在平板宽度（≈830px 以下）会被挤成两行（2026-09-26 站长反馈修复）：
+   七个条目 + logo + 语言切换的最小宽度约 830px，低于此值提前切抽屉。
+   900px 覆盖 iPad 竖屏（768/810/834）；横屏 1024 起仍为单行导航（放得下）。 */
+@media (max-width: 900px) {
+    .nav__links {
+        position: fixed;
+        top: var(--nav-h);
+        left: 0;
+        right: 0;
+        flex-direction: column;
+        align-items: flex-start;
+        background: var(--bg);
+        border-bottom: 1px solid var(--fg-10);
+        padding: 1.5rem;
+        gap: 1.25rem;
+        transform: translateY(-12px);
+        opacity: 0;
+        visibility: hidden;
+        transition: opacity 0.3s ease, transform 0.3s ease, visibility 0.3s;
+    }
+
+    .nav__links--open {
+        transform: translateY(0);
+        opacity: 1;
+        visibility: visible;
+    }
+
+    /* 下拉抽屉：语言切换改为独立一行，去掉竖分隔线 */
+    .nav__lang {
+        margin-left: 0;
+        padding-left: 0;
+        border-left: 0;
+        padding-top: 0.5rem;
+    }
+
+    .nav__toggle {
+        display: flex;
+    }
+}
+
 /* 英文/越南语等非中文语言的导航文案更长（SELECTED WORKS / LATEST NEWS / FAN GROUPS / Tác phẩm / Giải thưởng …），
-   窄屏会挤爆一行。此处对非中文语言提前切到抽屉导航，
-   中文（默认语言）仍沿用 640px 断点，避免默认语言布局被改变。
+   比中文更早切抽屉导航。
    越南语文案最长，断点更高（1300px）；英文 1100px 足够。 */
 @media (max-width: 1100px) {
     html[lang="en"] .nav__links {
