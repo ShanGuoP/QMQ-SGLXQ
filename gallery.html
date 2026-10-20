@@ -66,6 +66,11 @@
             .gallery-moments-link:hover .gml-arrow { transform: none; }
             .gml-text, .gallery-moments-link::after { transition: none; }
         }
+
+        /* 从写真集详情返回列表：内容区在数据渲染、滚动位置还原前先不绘制，
+           避免先在顶部闪一帧再跳到原位（gallery.js 定位后移除该类）。
+           只隐藏内容区，导航保持可见，减少空白感。 */
+        html.gallery-returning .gallery-page { visibility: hidden; }
     </style>
     <script src="/js/config.js"></script>
     <script src="/js/i18n.js"></script>
