@@ -2817,27 +2817,27 @@ html.lenis body {
     overflow: hidden;
 }
 
-/* GSAP 接管显现动效（motion.js 加载成功时给 html 加 .motion-gsap）：
-   解除原 IO reveal 对 opacity/transform 的 CSS transition——GSAP 逐帧写
-   inline style，若保留过渡会把每帧拖成惯性跟随；hover 反馈的过渡保留 */
-html.motion-gsap .work-item,
-html.motion-gsap .gallery__item,
-html.motion-gsap .news-item,
-html.motion-gsap .award-item,
-html.motion-gsap .schedule-item,
-html.motion-gsap .album-card {
+/* GSAP 仅在元素播放时通过 .motion-managed 接管显现，结束后恢复原样式。
+   避免 CSS transition 对 GSAP 的逐帧写入再次插值；保留 hover 的颜色反馈。 */
+.motion-managed.work-item,
+.motion-managed.gallery__item,
+.motion-managed.news-item,
+.motion-managed.award-item,
+.motion-managed.schedule-item,
+.motion-managed.album-card,
+.motion-managed.fan-group {
     transition-property: background-color, border-color;
 }
 
-html.motion-gsap .section__label,
-html.motion-gsap .section__title {
+.motion-managed.section__head,
+.motion-managed .section__label,
+.motion-managed .section__title {
     transition: none;
 }
 
-/* hero 入场 CSS 动画停用——改由 GSAP 统一编排（与滚动视差同一 transform
-   通道，避免 CSS animation 的 fill 态覆盖 GSAP inline 值） */
-html.motion-gsap .hero.hero-enter .hero__media img,
-html.motion-gsap .hero.hero-enter .hero__content {
+/* GSAP 接管的 hero 停用旧入场动画；分栏图片本身继续使用原悬停效果。 */
+.hero.motion-hero.hero-enter .hero__media img,
+.hero.motion-hero.hero-enter .hero__content {
     animation: none;
 }
 
@@ -3179,3 +3179,81 @@ a.fan-group:hover .fan-group__arrow {
     color: var(--fg-40);
 }
 
+
+/* Editorial motion enhancement: appearance/order remain driven by the CMS. */
+section[id], footer[id] { scroll-margin-top: calc(var(--nav-h, 72px) + 12px); }
+
+/* Pending elements stay hidden even when the legacy page observer adds is-visible.
+   Only motion.js owns this class; no library means no hidden enhancement state. */
+.motion-pending { opacity: 0 !important; transform: none; transition: none !important; }
+.motion-managed.section__head { transform: none; }
+.motion-hero .hero__media,
+.motion-hero .hero__mobile,
+.motion-hero .hero-split__mobile { overflow: hidden; }
+
+/* Keyboard users receive the same clear affordance as pointer users. */
+:where(a, button, input, select, textarea):focus-visible {
+    outline: 2px solid var(--fg-60);
+    outline-offset: 5px;
+}
+.album-card__title,
+.work-item__info,
+.fan-group__main {
+    transition: translate 420ms var(--ease-standard);
+}
+@media (hover: hover) and (pointer: fine) and (prefers-reduced-motion: no-preference) {
+    .album-card:is(:hover, :focus-within) .album-card__title { translate: 4px 0; }
+    .work-item:is(:hover, :focus-within) .work-item__info { translate: 5px 0; }
+    a.fan-group:is(:hover, :focus-visible) .fan-group__main { translate: 4px 0; }
+    .album-card:is(:hover, :focus-within) .album-card__cover img { transform: scale(1.065); }
+    .lightbox__nav:active, .lightbox__close:active { scale: 0.92; }
+}
+.lightbox__nav, .lightbox__close {
+    transition: opacity var(--dur-fast) ease, background-color var(--dur-fast) ease,
+        scale var(--dur-fast) var(--ease-standard);
+}
+
+/* A quiet skeleton reserves space while the homepage gallery loads independently. */
+.gallery__loading {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+    gap: 2rem;
+}
+.gallery__loading span {
+    display: block;
+    aspect-ratio: 3 / 4;
+    background: var(--fg-02);
+    border: 1px solid var(--fg-10);
+    position: relative;
+    overflow: hidden;
+}
+.gallery__loading span::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(105deg, transparent 25%, rgba(255,255,255,.65) 50%, transparent 75%);
+    animation: gallery-loading 1.8s ease-in-out infinite;
+}
+.gallery__loading span:nth-child(2)::after { animation-delay: .12s; }
+.gallery__loading span:nth-child(3)::after { animation-delay: .24s; }
+@keyframes gallery-loading { from { transform: translateX(-100%); } to { transform: translateX(100%); } }
+@keyframes nav-item-enter { from { opacity: 0; transform: translateY(-8px); } to { opacity: 1; transform: none; } }
+@media (max-width: 900px) {
+    .gallery__loading { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+    .nav__links--open > li {
+        animation: nav-item-enter 380ms var(--ease-standard) both;
+    }
+    .nav__links--open > li:nth-child(2) { animation-delay: 35ms; }
+    .nav__links--open > li:nth-child(3) { animation-delay: 70ms; }
+    .nav__links--open > li:nth-child(4) { animation-delay: 105ms; }
+    .nav__links--open > li:nth-child(n+5) { animation-delay: 140ms; }
+}
+@media (max-width: 640px) {
+    .gallery__loading { grid-template-columns: minmax(0, 1fr); }
+}
+@media (prefers-reduced-motion: reduce) {
+    .motion-pending, .section__head, .work-item, .gallery__item, .news-item,
+    .award-item, .schedule-item, .album-card { opacity: 1 !important; transform: none !important; }
+    .gallery__loading span::after, .nav__links--open > li, .hero__scroll-hint span { animation: none; }
+    .album-card__title, .work-item__info, .fan-group__main { translate: none; }
+}

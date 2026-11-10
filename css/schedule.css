@@ -59,6 +59,8 @@
     border-radius:8px;font-size:.92rem;color:rgba(28,28,28,.8);
 }
 .sd-cal__cell.is-out{color:rgba(28,28,28,.18)}
+button.sd-cal__cell{border:0;padding:0;background:transparent;font:inherit;color:inherit;cursor:pointer}
+button.sd-cal__cell:focus-visible{outline:2px solid currentColor;outline-offset:2px}
 .sd-cal__cell.is-today{box-shadow:inset 0 0 0 1.5px rgba(28,28,28,.4);font-weight:600}
 .sd-cal__cell.has-ev{cursor:pointer;font-weight:600;color:#1c1a18;transition:background .15s}
 .sd-cal__cell.has-ev::before{
