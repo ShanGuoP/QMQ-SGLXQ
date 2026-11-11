@@ -8,10 +8,12 @@
 .photo-shade {background:linear-gradient(90deg,#0006,transparent 48%),linear-gradient(0deg,#0009,transparent 35%,transparent 80%,#0003);opacity:var(--photo);pointer-events:none}
 .curtain {background:#08080a;will-change:clip-path}
 .halo {position:absolute;width:101cqh;height:101cqh;left:-50.5cqh;top:calc(52% - 50.5cqh);border:12cqh solid var(--accent);opacity:.05;border-radius:50%;transform:scale(var(--halo-scale,1));pointer-events:none}
-.wheel {width:65cqh;height:65cqh;position:absolute;left:-32.5cqh;top:calc(52% - 32.5cqh);filter:drop-shadow(0 2px 14px #0002);transform:scale(var(--wheel-scale,1));will-change:transform}
-.wheel-spectrum {position:absolute;inset:0;border-radius:50%;background:conic-gradient(from 0deg,#f185cf 0deg,#ff615c 60deg,#f5e675 120deg,#98dba6 180deg,#7cc8f1 240deg,#9c80df 300deg,#f185cf 360deg);mask:radial-gradient(circle,transparent 0 52%,#000 52.6% 69.7%,transparent 70.5%);transform:rotate(var(--rotation,45deg));will-change:transform}
-.wheel-ticks {position:absolute;inset:-7%;border-radius:50%;background:repeating-conic-gradient(from 0deg,#fff5 0deg .25deg,transparent .25deg 10deg);mask:radial-gradient(circle,transparent 0 69%,#000 69.3% 70%,transparent 70.4%);opacity:calc(.24 + var(--photo)*.34)}
-.wheel-marker {position:absolute;left:calc(80.7% - 1.15cqh);top:calc(19.3% - 1.15cqh);width:2.3cqh;height:2.3cqh;border:.55cqh solid #08080a;border-radius:50%;box-shadow:0 0 0 .12cqh #ffffff90;transform:scale(var(--marker-scale,1))}
+.wheel {width:65cqh;height:65cqh;position:absolute;left:-32.5cqh;top:calc(52% - 32.5cqh);transform:scale(var(--wheel-scale,1))}
+.wheel-spectrum, .wheel-sheen {position:absolute;inset:0;width:100%;height:100%;display:block;shape-rendering:geometricPrecision}
+.wheel-spectrum {transform:rotate(var(--rotation,45deg));transform-origin:50% 50%}
+.wheel-sheen {opacity:calc(.3 + var(--wheel-energy,0)*.3)}
+.wheel-ticks {position:absolute;inset:-7%;width:114%;height:114%;display:block;opacity:calc(.28 + var(--wheel-energy,0)*.26);shape-rendering:geometricPrecision}
+.wheel-marker {position:absolute;left:85.3%;top:14.7%;width:clamp(2px,.4cqh,3px);height:clamp(14px,2.4cqh,26px);border-radius:2px;background:#fffdf5;transform:translate(-50%,-50%) rotate(45deg) scale(var(--marker-scale,1))}
 .title-card {position:absolute;left:28%;right:6%;top:50%;transform:translateY(-50%);text-align:center;color:var(--accent);will-change:opacity,transform}
 .title-kicker {display:block;font-size:1.35cqh;letter-spacing:.5cqh;color:#d7c4d080;margin-bottom:3cqh}
 .color-title {font-family:Impact,"Arial Narrow",sans-serif;font-size:20cqh;line-height:1;letter-spacing:1.3cqh;font-weight:900;transform:scaleX(.76);background:repeating-linear-gradient(0deg,var(--accent) 0px,var(--accent) 2px,#fff5 2px,#fff5 3px,var(--accent) 3px,var(--accent) 5px);background-clip:text;-webkit-background-clip:text;color:transparent;text-shadow:2px 0 #d785ac15}
@@ -31,7 +33,7 @@
 .stage.is-portrait .picture img {object-position:var(--mobile-focus,50% 42%)}
 .stage.is-portrait .wheel {width:100cqw;height:100cqw;left:calc(-62cqw - var(--wheel-dock,0)*10cqw);top:calc(43% + var(--wheel-dock,0)*34% - 50cqw)}
 .stage.is-portrait .halo {width:145cqw;height:145cqw;left:calc(-84.5cqw - var(--wheel-dock,0)*10cqw);top:calc(43% + var(--wheel-dock,0)*34% - 72.5cqw);border-width:16cqw}
-.stage.is-portrait .wheel-marker {left:calc(80.7% - 1.3cqw);top:calc(19.3% - 1.3cqw);width:2.6cqw;height:2.6cqw;border-width:.6cqw}
+.stage.is-portrait .wheel-marker {width:clamp(2px,.55cqw,3px);height:clamp(14px,3.6cqw,26px)}
 .stage.is-portrait .title-card {left:34%;right:1%;top:43%}
 .stage.is-portrait .color-title {font-size:19cqw;letter-spacing:1cqw;transform:scaleX(.8)}
 .stage.is-portrait .title-kicker {font-size:1.5cqw;letter-spacing:.55cqw;margin-bottom:4.5cqw}
@@ -52,10 +54,7 @@
 .wheel.is-dragging {cursor:grabbing}
 .wheel>* {pointer-events:none}
 .wheel:focus-visible {outline:none}
-.wheel:focus-visible .wheel-marker {box-shadow:0 0 0 .4cqh #fff}
-.wheel-marker {left:85.3%;top:14.7%;width:.4cqh;height:2.4cqh;border:0;border-radius:2px;background:#fff;box-shadow:0 1px 4px #0004;transform:translate(-50%,-50%) rotate(45deg) scale(var(--marker-scale,1))}
-.stage.is-portrait .wheel-marker {left:85.3%;top:14.7%;width:.65cqw;height:4cqw;border:0}
-.wheel:focus-visible .wheel-marker {box-shadow:0 0 8px #fff8}
+.wheel:focus-visible .wheel-marker {outline:1px solid #fff;outline-offset:3px}
 .stage {overflow:clip}
 .stage {border-color:#ffffff12;box-shadow:0 24px 80px #0005,0 0 0 1px #0004}
 .pictures {z-index:0}
@@ -64,13 +63,7 @@
 .reveal-edge {background:radial-gradient(ellipse at 0% 70%,color-mix(in srgb,var(--accent) 48%,transparent),transparent 65%); opacity:calc(var(--reveal-light,0)*.32); mix-blend-mode:screen;}
 .curtain {background:#08090b}
 .halo {opacity:calc(.035 + var(--wheel-energy,0)*.035);border-color:var(--accent)}
-.wheel {filter:drop-shadow(0 3px 11px #0003)}
-.wheel-spectrum {filter:saturate(.88) contrast(1.04)}
-.wheel-spectrum::after {content:"";position:absolute;inset:0;border-radius:inherit; background:radial-gradient(circle,transparent 51.9%,#fff9 52.6%,transparent 53.1%,transparent 68.6%,#fff6 69.5%,transparent 70%); mix-blend-mode:soft-light;}
-.wheel-sheen {position:absolute;inset:0;border-radius:50%;pointer-events:none; background:conic-gradient(from -35deg,transparent 0deg,#fff6 48deg,transparent 88deg,#0002 160deg,transparent 200deg,#fff4 275deg,transparent 320deg); mask:radial-gradient(circle,transparent 52%,#000 52.6% 69.7%,transparent 70.5%); opacity:calc(.3 + var(--wheel-energy,0)*.3); mix-blend-mode:soft-light;}
-.wheel-ticks {opacity:calc(.28 + var(--wheel-energy,0)*.26);background:repeating-conic-gradient(from 0deg,#fff7 0deg .2deg,transparent .2deg 6deg)}
-.wheel-marker {background:#fffdf5;box-shadow:0 0 7px #fff4,0 1px 3px #0005}
-.wheel.is-dragging .wheel-marker {box-shadow:0 0 12px #fff8}
+.wheel.is-dragging .wheel-marker {background:#fff}
 .wheel.is-dragging .wheel-sheen {opacity:.7}
 .color-title {position:relative;overflow:hidden;background:none;color:var(--accent); -webkit-text-fill-color:currentColor; letter-spacing:.65cqh;line-height:1.08; text-shadow:0 1px 0 #fff2;}
 .color-title .letter, .caption-name .letter {display:inline-block;will-change:transform,opacity;backface-visibility:hidden}
@@ -94,7 +87,6 @@
 .stage.is-portrait .caption-name {font-size:14cqw;letter-spacing:.35cqw}
 .stage.is-portrait .caption-no {font-size:2cqw;letter-spacing:.55cqw}
 .stage.is-portrait .caption-name::after {left:auto;right:0;bottom:-3cqw;width:9cqw;transform-origin:right}
-.stage.is-portrait .wheel-marker {width:.55cqw;height:3.6cqw}
 @media(hover:hover) {
 .wheel:hover .wheel-sheen {opacity:.62}
 }
